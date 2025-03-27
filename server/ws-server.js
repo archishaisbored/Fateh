@@ -9,10 +9,8 @@ const io = new Server(server, {
   },
 });
 
-server.listen(PORT, HOST, () => {
-    console.log(`✅ Socket.IO server running on http://${HOST}:${PORT}`);
-  });
-  
+
+
 io.on("connection", (socket) => {
   console.log("🤖 Robot connected via Socket.IO");
 
@@ -29,6 +27,6 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(4000, () => {
-  console.log("✅ Socket.IO server running on http://localhost:4000");
-});
+server.listen(PORT, HOST, () => {
+    console.log(`✅ Socket.IO server running on http://${HOST}:${PORT}`);
+  });
