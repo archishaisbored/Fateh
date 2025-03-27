@@ -21,7 +21,7 @@ const RobotSpeech: React.FC<RobotSpeechProps> = ({ isActive }) => {
   useEffect(() => {
     if (!isActive) return;
 
-    const newSocket = io("http://localhost:4000");
+    const newSocket = io("https://fateh-socket-server.onrender.com");
     setSocket(newSocket);
 
     newSocket.on("caption", (data: { word: string }) => {

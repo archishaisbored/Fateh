@@ -1,6 +1,7 @@
 const { Server } = require("socket.io");
 const http = require("http");
-
+const PORT = process.env.PORT || 4000;
+const HOST = '0.0.0.0';
 const server = http.createServer();
 const io = new Server(server, {
   cors: {
@@ -8,6 +9,10 @@ const io = new Server(server, {
   },
 });
 
+server.listen(PORT, HOST, () => {
+    console.log(`✅ Socket.IO server running on http://${HOST}:${PORT}`);
+  });
+  
 io.on("connection", (socket) => {
   console.log("🤖 Robot connected via Socket.IO");
 
