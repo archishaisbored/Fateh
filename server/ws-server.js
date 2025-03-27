@@ -1,36 +1,35 @@
 const { Server } = require("socket.io");
 const http = require("http");
-const PORT = process.env.PORT || 4000; // Use Render-provided PORT or fallback to 4000
-const HOST = '0.0.0.0'; // Bind to all interfaces
 
-// Create an HTTP server
+const PORT = process.env.PORT || 4000; // Render will provide PORT
+const HOST = "0.0.0.0"; // Listen on all interfaces (required by Render)
+
+// Basic HTTP server to respond to Render's health checks
 const server = http.createServer((req, res) => {
-  // Optional: Add a basic HTTP response for Render's port detection
   res.writeHead(200, { "Content-Type": "text/plain" });
-  res.end("Socket.IO server is running");
+  res.end("✅ Socket.IO server is running\n");
 });
 
-// Attach Socket.IO to the HTTP server
+// Attach socket.io
 const io = new Server(server, {
   cors: {
-    origin: "*", // Allow all origins (for dev)
-  },
+    origin: "*", // Allow all origins (adjust for prod)
+    methods: ["GET", "POST"]
+  }
 });
 
-// Handle Socket.IO connections
+// Socket.IO event handling
 io.on("connection", (socket) => {
   console.log("🤖 Robot connected via Socket.IO");
 
-  // Handle captions sent by robot
   socket.on("caption", (data) => {
     console.log("📝 Caption:", data);
-    io.emit("caption", data); // Forward to all frontends
+    io.emit("caption", data); // Send to all clients
   });
 
-  // Handle control commands sent by robot
   socket.on("control", (data) => {
     console.log("🎮 Control:", data);
-    io.emit("control", data); // Broadcast to React
+    io.emit("control", data); // Broadcast to frontend
   });
 });
 
