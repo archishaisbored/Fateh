@@ -10,9 +10,17 @@ interface Action {
 
 interface RobotSpeechProps {
   isActive: boolean;
+  onToggleDroneFullScreen?: () => void;
+  onToggleCaptionFullScreen?: () => void;
+  onToggleHome?: () => void;
 }
 
-const RobotSpeech: React.FC<RobotSpeechProps> = ({ isActive }) => {
+const RobotSpeech: React.FC<RobotSpeechProps> = ({
+  isActive,
+  onToggleDroneFullScreen,
+  onToggleCaptionFullScreen,
+  onToggleHome
+}) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [speech, setSpeech] = useState<string[]>([]);
   const [actions, setActions] = useState<Action[]>([]);
@@ -21,15 +29,22 @@ const RobotSpeech: React.FC<RobotSpeechProps> = ({ isActive }) => {
   useEffect(() => {
     if (!isActive) return;
 
-    const newSocket = io("https://fateh-socket-server.onrender.com");
+    const newSocket = io("https://fateh-2.onrender.com");
     setSocket(newSocket);
+
+    newSocket.on("assistant_reply", (data: { reply: string }) => {
+      setSpeech((prev) => [...prev, data.reply]);
+    });
 
     newSocket.on("caption", (data: { word: string }) => {
       setCaptionBuffer((prev) => {
         const updated = prev + " " + data.word;
         setSpeech((prevLines) => {
           const updatedLines = [...prevLines];
-          if (updatedLines.length === 0 || updatedLines[updatedLines.length - 1].length > 100) {
+          if (
+            updatedLines.length === 0 ||
+            updatedLines[updatedLines.length - 1].length > 100
+          ) {
             updatedLines.push(data.word);
           } else {
             updatedLines[updatedLines.length - 1] += " " + data.word;
@@ -50,6 +65,21 @@ const RobotSpeech: React.FC<RobotSpeechProps> = ({ isActive }) => {
           completed: false,
         },
       ]);
+
+      // Fullscreen routing actions
+      switch (data.action) {
+        case "fullscreen":
+          onToggleDroneFullScreen?.();
+          break;
+        case "caption_fullscreen":
+          onToggleCaptionFullScreen?.();
+          break;
+        case "show_home":
+          onToggleHome?.();
+          break;
+        default:
+          break;
+      }
     });
 
     return () => {

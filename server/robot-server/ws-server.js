@@ -1,39 +1,74 @@
 const { Server } = require("socket.io");
 const http = require("http");
 
-const PORT = process.env.PORT || 4000; // Render will provide PORT
-const HOST = "0.0.0.0"; // Listen on all interfaces (required by Render)
+const PORT = process.env.PORT || 4000;
+const HOST = "0.0.0.0"; // For Render and external access
 
-// Basic HTTP server to respond to Render's health checks
+// Render health check response
 const server = http.createServer((req, res) => {
   res.writeHead(200, { "Content-Type": "text/plain" });
   res.end("✅ Socket.IO server is running\n");
 });
 
-// Attach socket.io
+// Attach Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: "*", // Allow all origins (adjust for prod)
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
 
-// Socket.IO event handling
-io.on("connection", (socket) => {
-  console.log("🤖 Robot connected via Socket.IO");
+// Track connected clients
+const clients = new Map();
 
-  socket.on("caption", (data) => {
-    console.log("📝 Caption:", data);
-    io.emit("caption", data); // Send to all clients
+// WebSocket Event Handling
+io.on("connection", (socket) => {
+  console.log(`🤖 New client connected. Socket ID: ${socket.id}`);
+
+  // Prevent multiple connections per client
+  if (clients.has(socket.handshake.address)) {
+    console.log(`⚠️ Duplicate connection detected. Disconnecting old client.`);
+    clients.get(socket.handshake.address).disconnect(); // Disconnect old instance
+  }
+  clients.set(socket.handshake.address, socket);
+
+  socket.on("disconnect", () => {
+    console.log(`❌ Client disconnected. Socket ID: ${socket.id}`);
+    clients.delete(socket.handshake.address);
   });
 
+  // Captioning event
+  socket.on("caption", (data) => {
+    console.log("📝 Caption:", data);
+    socket.broadcast.emit("caption", data); // Emit only to others
+  });
+
+  // Website control actions
   socket.on("control", (data) => {
     console.log("🎮 Control:", data);
-    io.emit("control", data); // Broadcast to frontend
+    socket.broadcast.emit("control", data);
+  });
+
+  // Assistant reply
+  socket.on("assistant_reply", (data) => {
+    console.log("🤖 Assistant Reply:", data);
+    socket.broadcast.emit("assistant_reply", data);
+  });
+
+  // Robot wakeup trigger
+  socket.on("robot_wakeup", (data) => {
+    console.log("🤖 Robot wakeup received:", data);
+    socket.broadcast.emit("robot_wakeup", data);
+  });
+
+  // Special command routing
+  socket.on("special_command", (data) => {
+    console.log("🧭 Special Command:", data);
+    socket.broadcast.emit("special_command", data);
   });
 });
 
-// Start the server
+// Start server
 server.listen(PORT, HOST, () => {
   console.log(`✅ Socket.IO server running on http://${HOST}:${PORT}`);
 });

@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { EyeOffIcon } from 'lucide-react';
 
 interface RobotEyeProps {
   isOpen: boolean;
@@ -19,19 +18,14 @@ const RobotEye: React.FC<RobotEyeProps> = ({ isOpen }) => {
                 <div className="w-24 h-24 rounded-full bg-black flex items-center justify-center">
                   <div className="w-16 h-16 rounded-full bg-robot-medium flex items-center justify-center">
                     <div className="w-14 h-14 rounded-full overflow-hidden relative flex items-center justify-center">
-                      {/* Iris */}
                       <div className="w-12 h-12 rounded-full bg-robot-accent relative flex items-center justify-center animate-pulse-slow">
-                        {/* Pupil */}
                         <div className="w-6 h-6 rounded-full bg-black"></div>
-                        {/* Light reflection */}
                         <div className="w-3 h-3 rounded-full bg-white absolute top-3 right-3"></div>
                       </div>
                     </div>
                   </div>
                 </div>
-                {/* Eyelid animation */}
-                <div className={`absolute top-0 left-0 w-full bg-robot-dark transition-all duration-700 ease-in-out
-                  ${isOpen ? 'h-0' : 'h-full'}`}></div>
+                <div className={`absolute top-0 left-0 w-full bg-robot-dark transition-all duration-700 ease-in-out ${isOpen ? 'h-0' : 'h-full'}`}></div>
               </div>
             ) : (
               <div className="text-gray-400 animate-pulse">
@@ -40,7 +34,7 @@ const RobotEye: React.FC<RobotEyeProps> = ({ isOpen }) => {
             )}
           </div>
 
-          {/* Right Eye */}
+          {/* Right Eye (duplicate structure) */}
           <div className="relative w-40 h-40 rounded-full bg-black/20 backdrop-blur-lg border border-white/10 flex items-center justify-center overflow-hidden">
             {isOpen ? (
               <div className="relative">
@@ -48,19 +42,14 @@ const RobotEye: React.FC<RobotEyeProps> = ({ isOpen }) => {
                 <div className="w-24 h-24 rounded-full bg-black flex items-center justify-center">
                   <div className="w-16 h-16 rounded-full bg-robot-medium flex items-center justify-center">
                     <div className="w-14 h-14 rounded-full overflow-hidden relative flex items-center justify-center">
-                      {/* Iris */}
                       <div className="w-12 h-12 rounded-full bg-robot-accent relative flex items-center justify-center animate-pulse-slow">
-                        {/* Pupil */}
                         <div className="w-6 h-6 rounded-full bg-black"></div>
-                        {/* Light reflection */}
                         <div className="w-3 h-3 rounded-full bg-white absolute top-3 right-3"></div>
                       </div>
                     </div>
                   </div>
                 </div>
-                {/* Eyelid animation with slightly different timing */}
-                <div className={`absolute top-0 left-0 w-full bg-robot-dark transition-all duration-800 ease-in-out delay-200
-                  ${isOpen ? 'h-0' : 'h-full'}`}></div>
+                <div className={`absolute top-0 left-0 w-full bg-robot-dark transition-all duration-800 ease-in-out delay-200 ${isOpen ? 'h-0' : 'h-full'}`}></div>
               </div>
             ) : (
               <div className="text-gray-400 animate-pulse">

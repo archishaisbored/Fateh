@@ -1,32 +1,40 @@
-
 import { useState, useEffect } from 'react';
+import { io, Socket } from 'socket.io-client';
+
+let socket: Socket;
 
 export function useRobotActivation() {
   const [isActivated, setIsActivated] = useState(false);
   const [isEyeOpen, setIsEyeOpen] = useState(false);
   const [showConsole, setShowConsole] = useState(false);
 
-  // Simulate receiving a command from backend (would be replaced with actual API call)
   useEffect(() => {
-    const activationTimer = setTimeout(() => {
-      setIsActivated(true);
-    }, 2000); // Simulate 2 second delay before activation
+    socket = io('https://fateh-2.onrender.com'); // your Render server
 
-    return () => clearTimeout(activationTimer);
+    socket.on('connect', () => {
+      console.log('✅ Connected to socket for activation');
+    });
+
+    socket.on('robot_wakeup', () => {
+      console.log('👁️ Robot Wakeup signal received!');
+      setIsActivated(true);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
-  // Handle eye animation sequence
+  // Eye opening and console display (only after activated)
   useEffect(() => {
     if (isActivated) {
-      // First left eye opens slightly
       const leftEyeTimer = setTimeout(() => {
         setIsEyeOpen(true);
       }, 1000);
 
-      // Then show console
       const consoleTimer = setTimeout(() => {
         setShowConsole(true);
-      }, 4000); // Increased time to allow for eye animation to be appreciated
+      }, 4000);
 
       return () => {
         clearTimeout(leftEyeTimer);
