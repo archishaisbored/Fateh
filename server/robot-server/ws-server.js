@@ -58,7 +58,8 @@ io.on("connection", (socket) => {
   // Robot wakeup trigger
   socket.on("robot_wakeup", (data) => {
     console.log("🤖 Robot wakeup received:", data);
-    socket.broadcast.emit("robot_wakeup", data);
+    io.emit("robot_wakeup", data); // ✅ Sends to ALL connected clients
+
   });
 
   // Special command routing
