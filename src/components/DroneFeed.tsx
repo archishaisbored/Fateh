@@ -9,12 +9,12 @@ interface DroneFeedProps {
 
 const DroneFeed: React.FC<DroneFeedProps> = ({ isActive, isFullScreen = false }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [showMap, setShowMap] = useState(false);
+  const [showCoordinatesModal, setShowCoordinatesModal] = useState(false);
   const [streamReady, setStreamReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const videoRef = useRef<HTMLImageElement>(null);
-  const [coordinates, setCoordinates] = useState({ lat: '34.0522° N', long: '118.2437° W', alt: '45M' });
+  const [coordinates, setCoordinates] = useState({ lat: '0° N', long: '0° W', alt: '0M' });
 
   if (typeof window === 'undefined') return null;
 
@@ -30,6 +30,7 @@ const DroneFeed: React.FC<DroneFeedProps> = ({ isActive, isFullScreen = false })
       try {
         const data = JSON.parse(event.data);
         if (data.latitude && data.longitude && data.altitude) {
+          // Update coordinates state when new data is received
           setCoordinates({
             lat: `${data.latitude}° N`,
             long: `${data.longitude}° E`,
@@ -45,7 +46,7 @@ const DroneFeed: React.FC<DroneFeedProps> = ({ isActive, isFullScreen = false })
     coordSocket.onclose = () => console.log('Coordinate WebSocket closed');
 
     return () => coordSocket.close();
-  }, []);
+  }, []); // Empty dependency array ensures the WebSocket is only connected once
 
   // Socket.IO listener for voice-controlled fullscreen toggle
   useEffect(() => {
@@ -53,12 +54,9 @@ const DroneFeed: React.FC<DroneFeedProps> = ({ isActive, isFullScreen = false })
 
     socket.on('control', (data) => {
       if (data?.action === 'fullscreen') {
-        setShowMap(false);
         document.documentElement.requestFullscreen?.();
       } else if (data?.action === 'minimize') {
         document.exitFullscreen?.();
-      } else if (data?.action === 'toggle_infrared') {
-        setShowMap((prev) => !prev);
       } else if (data?.action === 'pause') {
         if (videoRef.current) videoRef.current.style.filter = 'grayscale(100%)';
       } else if (data?.action === 'resume') {
@@ -83,7 +81,7 @@ const DroneFeed: React.FC<DroneFeedProps> = ({ isActive, isFullScreen = false })
 
   // Video feed WebSocket
   useEffect(() => {
-    if (!isActive || isLoading || showMap) return;
+    if (!isActive || isLoading || showCoordinatesModal) return;
 
     const connectWebSocket = () => {
       const wsUrl = 'wss://camserverndrf.onrender.com';
@@ -117,7 +115,7 @@ const DroneFeed: React.FC<DroneFeedProps> = ({ isActive, isFullScreen = false })
         setStreamReady(false);
         setError('Disconnected from stream');
         setTimeout(() => {
-          if (isActive && !isLoading && !showMap) {
+          if (isActive && !isLoading && !showCoordinatesModal) {
             connectWebSocket();
           }
         }, 2000);
@@ -131,10 +129,10 @@ const DroneFeed: React.FC<DroneFeedProps> = ({ isActive, isFullScreen = false })
         wsRef.current.close();
       }
     };
-  }, [isActive, isLoading, showMap]);
+  }, [isActive, isLoading, showCoordinatesModal]);
 
-  const toggleView = () => {
-    setShowMap((prev) => !prev);
+  const toggleCoordinatesModal = () => {
+    setShowCoordinatesModal(!showCoordinatesModal);
   };
 
   return (
@@ -153,7 +151,7 @@ const DroneFeed: React.FC<DroneFeedProps> = ({ isActive, isFullScreen = false })
           </div>
         ) : (
           <div className="relative w-full h-full">
-            {!showMap ? (
+            {!showCoordinatesModal ? (
               <div className="w-full h-full rounded-md relative overflow-hidden">
                 {streamReady ? (
                   <img
@@ -172,30 +170,14 @@ const DroneFeed: React.FC<DroneFeedProps> = ({ isActive, isFullScreen = false })
                     {error && <p className="absolute text-red-500">{error}</p>}
                   </div>
                 )}
-                {streamReady && (
-                  <>
-                    <div className="absolute top-0 left-0 w-full p-2 flex justify-between">
-                      <div className="bg-black/50 text-white text-xs px-2 py-1 rounded">LIVE</div>
-                      <div className="bg-black/50 text-white text-xs px-2 py-1 rounded">ALT: {coordinates.alt}</div>
-                    </div>
-                    <div className="absolute bottom-0 left-0 w-full p-2 flex justify-between">
-                      <div className="bg-black/50 text-white text-xs px-2 py-1 rounded">LAT: {coordinates.lat}</div>
-                      <div className="bg-black/50 text-white text-xs px-2 py-1 rounded">LONG: {coordinates.long}</div>
-                    </div>
-                  </>
-                )}
               </div>
             ) : (
               <div className="w-full h-full rounded-md bg-gray-800 flex items-center justify-center">
-                <img
-                  src="https://images.unsplash.com/photo-1518770660439-4636190af475"
-                  alt="Terrain map"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-0 left-0 w-full h-full bg-robot-dark/60">
-                  <div className="p-4 text-center text-robot-accent">
-                    <p className="font-mono">TERRAIN MAP VIEW</p>
-                  </div>
+                <div className="bg-black p-4 text-center text-robot-accent">
+                  <p className="font-mono text-white">Coordinates:</p>
+                  <p className="text-white">{`LAT: ${coordinates.lat}`}</p>
+                  <p className="text-white">{`LONG: ${coordinates.long}`}</p>
+                  <p className="text-white">{`ALT: ${coordinates.alt}`}</p>
                 </div>
               </div>
             )}
@@ -206,12 +188,12 @@ const DroneFeed: React.FC<DroneFeedProps> = ({ isActive, isFullScreen = false })
       {!isFullScreen && (
         <div className="p-3 border-t border-white/10 text-center">
           <button
-            onClick={toggleView}
+            onClick={toggleCoordinatesModal}
             className="console-button flex items-center justify-center mx-auto gap-2"
             disabled={isLoading}
           >
             <MapIcon size={16} />
-            <span>Switch to {showMap ? 'Camera Feed' : 'Terrain Map'}</span>
+            <span>{showCoordinatesModal ? 'Hide Coordinates' : 'Show Drone Coordinates'}</span>
           </button>
         </div>
       )}

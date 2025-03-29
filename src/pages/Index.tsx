@@ -24,12 +24,12 @@ const Index = () => {
 
   const handleToggleDroneFullScreen = () => {
     setIsDroneFullScreen(!isDroneFullScreen);
-    if (!isDroneFullScreen) setIsCaptionFullScreen(false);
+    if (!isDroneFullScreen) setIsCaptionFullScreen(false); // Disable captions fullscreen when enabling drone
   };
 
   const handleToggleCaptionFullScreen = () => {
     setIsCaptionFullScreen(!isCaptionFullScreen);
-    if (!isCaptionFullScreen) setIsDroneFullScreen(false);
+    if (!isCaptionFullScreen) setIsDroneFullScreen(false); // Disable drone fullscreen when enabling captions
   };
 
   return (

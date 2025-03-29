@@ -117,43 +117,6 @@ const RobotSpeech: React.FC<RobotSpeechProps> = ({
             <div className="text-white/50 italic text-center py-4">Awaiting robot communication...</div>
           )}
         </div>
-
-        {/* Gemini Action Plan (Retained) */}
-        <div className="mt-6">
-          <div className="flex items-center gap-2 mb-3">
-            <List className="text-robot-accent" size={18} />
-            <h3 className="font-medium text-white">Gemini Action Plan</h3>
-          </div>
-
-          <div className="space-y-2">
-            {actions.length > 0 ? (
-              actions.map((action) => (
-                <div
-                  key={action.id}
-                  onClick={() => toggleActionComplete(action.id)}
-                  className={`action-item flex items-center gap-3 ${
-                    action.completed ? 'bg-robot-success/20 border border-robot-success/40' : ''
-                  }`}
-                >
-                  <div
-                    className={`w-5 h-5 rounded-full flex items-center justify-center ${
-                      action.completed
-                        ? 'text-robot-success'
-                        : 'text-white/30 border border-white/30'
-                    }`}
-                  >
-                    {action.completed && <CheckCircle2 size={20} />}
-                  </div>
-                  <span className={action.completed ? 'line-through text-white/50' : 'text-white'}>
-                    {action.text}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <div className="text-white/50 italic text-center py-4">Waiting for instructions...</div>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );

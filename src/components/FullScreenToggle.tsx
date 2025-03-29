@@ -20,21 +20,25 @@ const FullScreenToggle: React.FC<FullScreenToggleProps> = ({
       <Button
         variant="outline"
         size="sm"
-        className={`bg-black/30 border-white/20 hover:bg-black/50 ${isDroneFullScreen ? 'text-robot-accent' : 'text-white/70'}`}
+        className={`bg-black/30 border-white/20 hover:bg-black/50 ${
+          isDroneFullScreen ? 'text-robot-accent' : 'text-white/70'
+        }`}
         onClick={onToggleDroneFullScreen}
       >
         <Maximize2 size={16} className="mr-1" />
-        Drone View
+        {isDroneFullScreen ? "Exit Drone View" : "Drone View"}
       </Button>
-      
-      <Button 
+
+      <Button
         variant="outline"
         size="sm"
-        className={`bg-black/30 border-white/20 hover:bg-black/50 ${isCaptionFullScreen ? 'text-robot-accent' : 'text-white/70'}`}
+        className={`bg-black/30 border-white/20 hover:bg-black/50 ${
+          isCaptionFullScreen ? 'text-robot-accent' : 'text-white/70'
+        }`}
         onClick={onToggleCaptionFullScreen}
       >
         <CaptionsIcon size={16} className="mr-1" />
-        Captions
+        {isCaptionFullScreen ? "Exit Captions" : "Captions"}
       </Button>
     </div>
   );
