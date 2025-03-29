@@ -14,34 +14,48 @@ const Index = () => {
 
   React.useEffect(() => {
     socket.on("robot_wakeup", () => {
-      console.log("👁 Wakeup received from robot");
+      console.log("\uD83D\uDC41 Wakeup received from robot");
+    });
+
+    socket.on("control", (data) => {
+      console.log("\uD83D\uDCE2 Received control event:", data);
+
+      if (data.action === "fullscreen_drone") {
+        setIsDroneFullScreen(true);
+        setIsCaptionFullScreen(false);
+      } else if (data.action === "fullscreen_caption") {
+        setIsCaptionFullScreen(true);
+        setIsDroneFullScreen(false);
+      } else if (data.action === "fullscreen_home") {
+        setIsDroneFullScreen(false);
+        setIsCaptionFullScreen(false);
+      }
     });
 
     return () => {
       socket.off("robot_wakeup");
+      socket.off("control");
     };
   }, [socket]);
 
   const handleToggleDroneFullScreen = () => {
     setIsDroneFullScreen(!isDroneFullScreen);
-    if (!isDroneFullScreen) setIsCaptionFullScreen(false); // Disable captions fullscreen when enabling drone
+    if (!isDroneFullScreen) setIsCaptionFullScreen(false);
   };
 
   const handleToggleCaptionFullScreen = () => {
     setIsCaptionFullScreen(!isCaptionFullScreen);
-    if (!isCaptionFullScreen) setIsDroneFullScreen(false); // Disable drone fullscreen when enabling captions
+    if (!isCaptionFullScreen) setIsDroneFullScreen(false);
   };
 
   return (
     <div className="min-h-screen w-full bg-robot-dark p-0 flex items-center justify-center">
-      {/* Robot Eye Animation */}
       {!showConsole && (
         <div className="fixed inset-0 flex items-center justify-center z-10">
           <RobotEye isOpen={isEyeOpen} />
         </div>
       )}
 
-      {/* Fullscreen Toggle Buttons */}
       {showConsole && (
         <FullScreenToggle
           isDroneFullScreen={isDroneFullScreen}
@@ -51,7 +65,6 @@ const Index = () => {
         />
       )}
 
-      {/* Main Content */}
       <div className="max-w-7xl w-full mx-auto">
         {isDroneFullScreen ? (
           <div className="w-full h-screen">

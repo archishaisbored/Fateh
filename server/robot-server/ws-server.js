@@ -46,8 +46,9 @@ io.on("connection", (socket) => {
   // Website control actions
   socket.on("control", (data) => {
     console.log("🎮 Control:", data);
-    socket.broadcast.emit("control", data);
-  });
+    io.emit("control", data); // ✅ Sends to ALL clients, including sender
+});
+
 
   // Assistant reply
   socket.on("assistant_reply", (data) => {
