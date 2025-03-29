@@ -25,16 +25,16 @@ const clients = new Map();
 io.on("connection", (socket) => {
   console.log(`🤖 New client connected. Socket ID: ${socket.id}`);
 
-  // Prevent multiple connections per client
-  if (clients.has(socket.handshake.address)) {
+  // Prevent multiple connections per client (FIX: Use socket.id instead of IP)
+  if (clients.has(socket.id)) {
     console.log(`⚠️ Duplicate connection detected. Disconnecting old client.`);
-    clients.get(socket.handshake.address).disconnect(); // Disconnect old instance
+    clients.get(socket.id).disconnect(); // Disconnect old instance
   }
-  clients.set(socket.handshake.address, socket);
+  clients.set(socket.id, socket);
 
   socket.on("disconnect", () => {
     console.log(`❌ Client disconnected. Socket ID: ${socket.id}`);
-    clients.delete(socket.handshake.address);
+    clients.delete(socket.id);
   });
 
   // Captioning event
@@ -59,7 +59,6 @@ io.on("connection", (socket) => {
   socket.on("robot_wakeup", (data) => {
     console.log("🤖 Robot wakeup received:", data);
     io.emit("robot_wakeup", data); // ✅ Sends to ALL connected clients
-
   });
 
   // Special command routing

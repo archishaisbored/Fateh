@@ -11,7 +11,7 @@ const Index = () => {
   const [showConsole, setShowConsole] = useState(false);
   const [isDroneFullScreen, setIsDroneFullScreen] = useState(false);
   const [isCaptionFullScreen, setIsCaptionFullScreen] = useState(false);
-  const [isEyeOpen, setIsEyeOpen] = useState(false);
+  const [isEyeOpen, setIsEyeOpen] = useState(true);
 
   useEffect(() => {
     const socket = io("https://fateh-2.onrender.com", {
@@ -21,11 +21,12 @@ const Index = () => {
     socket.on("connect", () => {
       console.log("✅ Frontend connected to Socket.IO");
     });
-    socket.on("robot_wakeup", () => {
-      console.log("👁 Wakeup received from robot");
+    socket.on("robot_wakeup", (data) => {
+      console.log("👁 Wakeup received from robot", data);
       setIsEyeOpen(true);
       setTimeout(() => setShowConsole(true), 2000);
     });
+    
     
 
     return () => {
@@ -50,11 +51,10 @@ const Index = () => {
   return (
     <div className="min-h-screen w-full bg-robot-dark p-0 flex items-center justify-center">
       {/* Initial robot eye activation stage */}
-      {!showConsole && (
-        <div className="fixed inset-0 flex items-center justify-center z-10">
-          <RobotEye isOpen={isEyeOpen} />
-        </div>
-      )}
+      <div className="fixed inset-0 flex items-center justify-center z-10">
+  <RobotEye isOpen={isEyeOpen} />
+</div>
+
 
       {/* Full screen toggle buttons */}
       {showConsole && (
