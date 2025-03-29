@@ -1,5 +1,5 @@
 import React from 'react';
-import { EyeOffIcon } from 'lucide-react';
+import { EyeIcon } from 'lucide-react';
 
 interface RobotEyeProps {
   isOpen: boolean;
@@ -9,56 +9,72 @@ const RobotEye: React.FC<RobotEyeProps> = ({ isOpen }) => {
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="relative w-screen h-screen flex items-center justify-center bg-robot-dark">
-        <div className="flex gap-16 items-center justify-center transform scale-100 md:scale-125 lg:scale-150">
+        <div className="flex gap-40 items-center justify-center transform scale-100 md:scale-125 lg:scale-150">
           {/* Left Eye */}
-          <div className="relative w-40 h-40 rounded-full bg-black/20 backdrop-blur-lg border border-white/10 flex items-center justify-center overflow-hidden">
+          <div className="relative w-40 h-40 rounded-full bg-black overflow-hidden flex items-center justify-center">
             {isOpen ? (
-              <div className="relative">
-                <div className="w-40 h-40 absolute top-0 left-0 bg-gradient-to-br from-robot-accent/30 to-transparent opacity-50 rounded-full"></div>
-                <div className="w-24 h-24 rounded-full bg-black flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-robot-medium flex items-center justify-center">
-                    <div className="w-14 h-14 rounded-full overflow-hidden relative flex items-center justify-center">
-                      <div className="w-12 h-12 rounded-full bg-robot-accent relative flex items-center justify-center animate-pulse-slow">
-                        <div className="w-6 h-6 rounded-full bg-black"></div>
-                        <div className="w-3 h-3 rounded-full bg-white absolute top-3 right-3"></div>
-                      </div>
-                    </div>
+              <div className="w-full h-full flex items-center justify-center">
+                {/* Blue glow */}
+                <div className="absolute inset-0 bg-blue-500/30 blur-xl"></div>
+                {/* Eye opening animation */}
+                <div className="w-28 h-28 rounded-full bg-black border-2 border-gray-800 flex items-center justify-center">
+                  <div 
+                    className={`w-24 h-24 rounded-full bg-gradient-to-b from-white to-blue-100 
+                    transform transition-all duration-1000 flex items-center justify-center
+                    ${isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}
+                  >
+                    {/* Light reflection */}
+                    <div className="w-10 h-10 rounded-full bg-blue-100 opacity-70 absolute top-4 right-6 blur-sm"></div>
+                    <div className="w-4 h-4 rounded-full bg-blue-500 absolute top-5 right-7"></div>
                   </div>
                 </div>
-                <div className={`absolute top-0 left-0 w-full bg-robot-dark transition-all duration-700 ease-in-out ${isOpen ? 'h-0' : 'h-full'}`}></div>
+                {/* Eyelid animation */}
+                <div 
+                  className={`absolute inset-0 w-full bg-black transition-transform duration-1000 ease-in-out
+                  transform ${isOpen ? '-translate-y-full' : 'translate-y-0'}`}
+                ></div>
               </div>
             ) : (
-              <div className="text-gray-400 animate-pulse">
-                <EyeOffIcon size={50} />
+              <div className="w-full h-full bg-black flex items-center justify-center">
+                {/* Closed eye - white slit */}
+                <div className="w-24 h-1 bg-white rounded-full"></div>
               </div>
             )}
           </div>
 
-          {/* Right Eye (duplicate structure) */}
-          <div className="relative w-40 h-40 rounded-full bg-black/20 backdrop-blur-lg border border-white/10 flex items-center justify-center overflow-hidden">
+          {/* Right Eye */}
+          <div className="relative w-40 h-40 rounded-full bg-black overflow-hidden flex items-center justify-center">
             {isOpen ? (
-              <div className="relative">
-                <div className="w-40 h-40 absolute top-0 left-0 bg-gradient-to-br from-robot-accent/30 to-transparent opacity-50 rounded-full"></div>
-                <div className="w-24 h-24 rounded-full bg-black flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-robot-medium flex items-center justify-center">
-                    <div className="w-14 h-14 rounded-full overflow-hidden relative flex items-center justify-center">
-                      <div className="w-12 h-12 rounded-full bg-robot-accent relative flex items-center justify-center animate-pulse-slow">
-                        <div className="w-6 h-6 rounded-full bg-black"></div>
-                        <div className="w-3 h-3 rounded-full bg-white absolute top-3 right-3"></div>
-                      </div>
-                    </div>
+              <div className="w-full h-full flex items-center justify-center">
+                {/* Blue glow */}
+                <div className="absolute inset-0 bg-blue-500/30 blur-xl"></div>
+                {/* Eye opening animation */}
+                <div className="w-28 h-28 rounded-full bg-black border-2 border-gray-800 flex items-center justify-center">
+                  <div 
+                    className={`w-24 h-24 rounded-full bg-gradient-to-b from-white to-blue-100 
+                    transform transition-all duration-1000 flex items-center justify-center
+                    ${isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}
+                  >
+                    {/* Light reflection */}
+                    <div className="w-10 h-10 rounded-full bg-blue-100 opacity-70 absolute top-4 right-6 blur-sm"></div>
+                    <div className="w-4 h-4 rounded-full bg-blue-500 absolute top-5 right-7"></div>
                   </div>
                 </div>
-                <div className={`absolute top-0 left-0 w-full bg-robot-dark transition-all duration-800 ease-in-out delay-200 ${isOpen ? 'h-0' : 'h-full'}`}></div>
+                {/* Eyelid animation with slightly different timing */}
+                <div 
+                  className={`absolute inset-0 w-full bg-black transition-transform duration-1200 ease-in-out delay-100
+                  transform ${isOpen ? '-translate-y-full' : 'translate-y-0'}`}
+                ></div>
               </div>
             ) : (
-              <div className="text-gray-400 animate-pulse">
-                <EyeOffIcon size={50} />
+              <div className="w-full h-full bg-black flex items-center justify-center">
+                {/* Closed eye - white slit */}
+                <div className="w-24 h-1 bg-white rounded-full"></div>
               </div>
             )}
           </div>
         </div>
-        <div className={`text-xl font-medium text-center absolute bottom-20 transition-all duration-500 ${isOpen ? 'text-robot-accent' : 'text-gray-500'}`}>
+        <div className={`text-xl font-medium text-center absolute bottom-20 transition-all duration-500 ${isOpen ? 'text-blue-400' : 'text-gray-500'}`}>
           {isOpen ? "SYSTEM ONLINE" : "STANDBY MODE"}
         </div>
       </div>

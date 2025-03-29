@@ -1,7 +1,10 @@
-import { useState, useEffect } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { useState, useEffect } from "react";
+import { io, Socket } from "socket.io-client";
 
-let socket: Socket;
+// Ensure socket is only created once
+const socket: Socket = io("https://fateh-2.onrender.com", {
+  transports: ["websocket"],
+});
 
 export function useRobotActivation() {
   const [isActivated, setIsActivated] = useState(false);
@@ -9,23 +12,21 @@ export function useRobotActivation() {
   const [showConsole, setShowConsole] = useState(false);
 
   useEffect(() => {
-    socket = io('https://fateh-2.onrender.com'); // your Render server
-
-    socket.on('connect', () => {
-      console.log('✅ Connected to socket for activation');
+    socket.on("connect", () => {
+      console.log("✅ Connected to socket for activation");
     });
 
-    socket.on('robot_wakeup', () => {
-      console.log('👁️ Robot Wakeup signal received!');
+    socket.on("robot_wakeup", () => {
+      console.log("👁️ Robot Wakeup signal received!");
       setIsActivated(true);
     });
 
     return () => {
-      socket.disconnect();
+      socket.off("robot_wakeup");
     };
   }, []);
 
-  // Eye opening and console display (only after activated)
+  // Handle Eye and Console animation after activation
   useEffect(() => {
     if (isActivated) {
       const leftEyeTimer = setTimeout(() => {
@@ -43,5 +44,5 @@ export function useRobotActivation() {
     }
   }, [isActivated]);
 
-  return { isActivated, isEyeOpen, showConsole };
+  return { isActivated, isEyeOpen, showConsole, socket };
 }
